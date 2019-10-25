@@ -3,8 +3,30 @@ package worker
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"strings"
 )
+
+func getCharacterRange() []int {
+	tab := []int{}
+
+	// numbers
+	for i := 0x30; i <= 0x39; i++ {
+		tab = append(tab, i)
+	}
+
+	// uppercase characters
+	for i := 0x41; i <= 0x5a; i++ {
+		tab = append(tab, i)
+	}
+
+	// lowercase characters
+	for i := 0x61; i <= 0x7a; i++ {
+		tab = append(tab, i)
+	}
+
+	return tab
+}
 
 func md5Hash(text string) string {
 	hasher := md5.New()
@@ -12,6 +34,7 @@ func md5Hash(text string) string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
+// Match explique
 func Match(message string, target string) bool {
 	sum := md5Hash(message)
 
@@ -20,4 +43,13 @@ func Match(message string, target string) bool {
 	}
 
 	return false
+}
+
+// Test csiojfise
+func Test() {
+	tab := getCharacterRange()
+
+	for i := 0; i < len(tab); i++ {
+		fmt.Printf("%c ", tab[i])
+	}
 }
