@@ -54,19 +54,17 @@ func Test() {
 	}
 }
 
-const len = 4
-
 // Increment the given index of the clock array.
-func increment(arr *[len]int, i int, limit int) {
-	if i >= len {
+func increment(arr []int, length int, i int, limit int) {
+	if i < 0 || i >= length {
 		return
 	}
 	arr[i]++
-	if arr[i] == -1 {
+	if arr[i] == 0 {
 		return
 	}
 	if arr[i]%limit == 0 {
 		arr[i] = 0
-		increment(arr, i+1, limit)
+		increment(arr, length, i+1, limit)
 	}
 }
