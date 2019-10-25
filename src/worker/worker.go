@@ -53,3 +53,20 @@ func Test() {
 		fmt.Printf("%c ", tab[i])
 	}
 }
+
+const len = 4
+
+// Increment the given index of the clock array.
+func increment(arr *[len]int, i int, limit int) {
+	if i < len-1 {
+		return
+	}
+	arr[i]++
+	if arr[i] == -1 {
+		return
+	}
+	if arr[i]%limit == 0 {
+		arr[i] = 0
+		increment(arr, i+1, limit)
+	}
+}
