@@ -58,7 +58,7 @@ const len = 4
 
 // Increment the given index of the clock array.
 func increment(arr *[len]int, i int, limit int) {
-	if i < len-1 {
+	if i >= len {
 		return
 	}
 	arr[i]++
