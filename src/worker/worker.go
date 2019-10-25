@@ -12,12 +12,12 @@ func md5Hash(text string) string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-func Match(message string, target string) (bool, string) {
+func Match(message string, target string) bool {
 	sum := md5Hash(message)
 
 	if strings.Compare(target, sum) == 0 {
-		return true, message
+		return true
 	}
 
-	return false, ""
+	return false
 }
