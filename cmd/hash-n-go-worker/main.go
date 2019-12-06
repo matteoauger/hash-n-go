@@ -1,8 +1,9 @@
-package worker
+package main
 
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"strings"
 )
 
@@ -12,7 +13,7 @@ func md5Hash(text string) string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-func Match(message string, target string) bool {
+func match(message string, target string) bool {
 	sum := md5Hash(message)
 
 	if strings.Compare(target, sum) == 0 {
@@ -20,4 +21,8 @@ func Match(message string, target string) bool {
 	}
 
 	return false
+}
+
+func main() {
+	fmt.Print("I'm the worker.")
 }
