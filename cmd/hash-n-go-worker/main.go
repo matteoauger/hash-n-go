@@ -16,11 +16,7 @@ func md5Hash(text string) string {
 func match(message string, target string) bool {
 	sum := md5Hash(message)
 
-	if strings.Compare(target, sum) == 0 {
-		return true
-	}
-
-	return false
+	return strings.Compare(target, sum) == 0
 }
 
 func main() {
