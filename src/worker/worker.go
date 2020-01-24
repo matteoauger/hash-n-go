@@ -47,36 +47,33 @@ func Match(message string, target string) bool {
 
 //MainLoop hdihiz
 func MainLoop(start string, end string, target string) string {
-	current := start
+	//TODO: Rendre taille égale à taille de end
+	const size = 3
+	var current [size]int
+	password := ""
 	tab := getCharacterRange()
 	cpt := 0
-	for cpt < len(tab) {
-		current = string(tab[cpt])
-		fmt.Println(current)
-		if Match(current, target) {
+	// TODO: Condition d'arret à changer
+	for cpt < len(tab)*len(tab)*len(tab) {
+		password = string(tab[current[0]]) + string(tab[current[1]]) + string(tab[current[2]])
+		if Match(password, target) {
 			fmt.Println("found!")
-			return current
+			return password
 		}
 		cpt += 1
+		increment(current, size, 0, len(tab))
 	}
 	return ""
 }
 
-// Test csiojfise
-func Test() {
-	tab := getCharacterRange()
-
-	for i := 0; i < len(tab); i++ {
-		fmt.Printf("%c ", tab[i])
-	}
-}
-
 // Increment the given index of the clock array.
-func increment(arr []int, length int, i int, limit int) {
+// TODO: enlever la taille fixe de arr
+func increment(arr [3]int, length int, i int, limit int) {
 	if i < 0 || i >= length {
 		return
 	}
 	arr[i]++
+	fmt.Println(arr[i])
 	if arr[i] == 0 {
 		return
 	}
