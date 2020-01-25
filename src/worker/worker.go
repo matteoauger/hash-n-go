@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -47,15 +48,22 @@ func Match(message string, target string) bool {
 
 //MainLoop hdihiz
 func MainLoop(start string, end string, target string) string {
-	//TODO: Rendre taille égale à taille de end
-	const size = 3
-	var current [size]int
+	size := len(end)
+	current := make([]int, size)
 	password := ""
 	tab := getCharacterRange()
 	cpt := 0
-	// TODO: Condition d'arret à changer
-	for cpt < len(tab)*len(tab)*len(tab) {
-		password = string(tab[current[0]]) + string(tab[current[1]]) + string(tab[current[2]])
+	//TODO: voir pour le problème qu'il ne prendra jamais en compte le premier element du character range
+	//Il faut trouver une autre méthode pour construire le password
+	for cpt < int(math.Pow(float64(len(tab)), float64(size))) {
+		i := 0
+		password = ""
+		for i < size {
+			if current[i] != 0 {
+				password += string(tab[current[i]])
+			}
+			i++
+		}
 		if Match(password, target) {
 			fmt.Println("found!")
 			return password
@@ -67,17 +75,16 @@ func MainLoop(start string, end string, target string) string {
 }
 
 // Increment the given index of the clock array.
-// TODO: enlever la taille fixe de arr
-func increment(arr *[3]int, length int, i int, limit int) {
+func increment(arr *[]int, length int, i int, limit int) {
 	if i < 0 || i >= length {
 		return
 	}
-	arr[i]++
-	if arr[i] == 0 {
+	(*arr)[i]++
+	if (*arr)[i] == 0 {
 		return
 	}
-	if arr[i]%limit == 0 {
-		arr[i] = 0
+	if (*arr)[i]%limit == 0 {
+		(*arr)[i] = 0
 		increment(arr, length, i+1, limit)
 	}
 }

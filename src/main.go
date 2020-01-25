@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	testStr := "tes"
+	testStr := "aaac"
 	matched := worker.MainLoop("", "aaaaaa", worker.Md5Hash(testStr))
 	fmt.Println(matched, testStr)
 }
