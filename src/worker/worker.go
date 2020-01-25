@@ -61,19 +61,18 @@ func MainLoop(start string, end string, target string) string {
 			return password
 		}
 		cpt += 1
-		increment(current, size, 0, len(tab))
+		increment(&current, size, 0, len(tab))
 	}
 	return ""
 }
 
 // Increment the given index of the clock array.
 // TODO: enlever la taille fixe de arr
-func increment(arr [3]int, length int, i int, limit int) {
+func increment(arr *[3]int, length int, i int, limit int) {
 	if i < 0 || i >= length {
 		return
 	}
 	arr[i]++
-	fmt.Println(arr[i])
 	if arr[i] == 0 {
 		return
 	}
