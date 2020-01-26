@@ -53,7 +53,8 @@ func MainLoop(start string, end string, target string) string {
 	password := ""
 	tab := getCharacterRange()
 	cpt := 0
-	for cpt < int(math.Pow(float64(len(tab)), float64(size))) {
+	numberToTest := int(math.Pow(float64(len(tab)), float64(size)))
+	for cpt < numberToTest {
 		i := size - 1
 		password = ""
 		toTake := false
