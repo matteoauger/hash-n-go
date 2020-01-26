@@ -56,13 +56,17 @@ func MainLoop(start string, end string, target string) string {
 	//TODO: voir pour le problème qu'il ne prendra jamais en compte le premier element du character range
 	//Il faut trouver une autre méthode pour construire le password
 	for cpt < int(math.Pow(float64(len(tab)), float64(size))) {
-		i := 0
+		i := size - 1
 		password = ""
-		for i < size {
+		toTake := false
+		for i >= 0 {
 			if current[i] != 0 {
+				toTake = true
+			}
+			if toTake {
 				password += string(tab[current[i]])
 			}
-			i++
+			i--
 		}
 		if Match(password, target) {
 			fmt.Println("found!")
