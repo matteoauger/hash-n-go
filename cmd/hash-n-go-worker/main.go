@@ -1,4 +1,4 @@
-package worker
+package main
 
 import (
 	"crypto/md5"
@@ -66,11 +66,11 @@ func Md5Hash(text string) string {
 func Match(message string, target string) bool {
 	sum := Md5Hash(message)
 
-	if strings.Compare(target, sum) == 0 {
-		return true
-	}
+	return strings.Compare(target, sum) == 0
+}
 
-	return false
+func main() {
+	fmt.Print("I'm the worker.")
 }
 
 //MainLoop hdihiz
