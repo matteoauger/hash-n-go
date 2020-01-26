@@ -84,10 +84,7 @@ func increment(arr *[]int, length int, i int, limit int) {
 		return
 	}
 	(*arr)[i]++
-	if (*arr)[i] == 0 {
-		return
-	}
-	if (*arr)[i]%limit == 0 {
+	if (*arr)[i]+1 == limit+1 {
 		(*arr)[i] = 0
 		increment(arr, length, i+1, limit)
 	}
