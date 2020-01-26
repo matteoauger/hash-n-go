@@ -1,4 +1,4 @@
-package main
+package worker
 
 import (
 	"crypto/md5"
