@@ -29,10 +29,10 @@ func getCharacterRange() []int {
 	return tab
 }
 
-func getCharacterMap(tab []int) map[string]int {
-	result := make(map[string]int)
+func getCharacterMap(tab []int) map[int]int {
+	result := make(map[int]int)
 	for i, character := range tab {
-		result[string(character)] = i
+		result[character] = i
 	}
 	return result
 }
@@ -83,13 +83,13 @@ func MainLoop(start string, end string, target string) string {
 	characterMap := getCharacterMap(tab)
 	k := 0
 	for k < startLength {
-		startClock[k] = characterMap[string(start[k])]
+		startClock[k] = characterMap[int(start[k])]
 		current[k] = startClock[k]
 		k += 1
 	}
 	k = 0
 	for k < endLength {
-		endClock[k] = characterMap[string(end[k])]
+		endClock[k] = characterMap[int(end[k])]
 		k += 1
 	}
 	steps := getSteps(startClock, endClock, len(tab))
