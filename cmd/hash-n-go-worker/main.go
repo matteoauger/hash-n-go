@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
 )
 
 // Constants
@@ -51,8 +50,7 @@ func main() {
 	}
 	var start = os.Args[1]
 	var end = os.Args[2]
-	var hash = /*md5Hash(*/ os.Args[3] //) // Uncomment to give a clear password as argument.
-
+	var hash = os.Args[3]
 	var lStart = len(start)
 	var lEnd = len(end)
 	if lStart > lEnd {
@@ -70,10 +68,8 @@ func main() {
 			os.Exit(2)
 		}
 	}
-	var s = time.Now()
 	var pass = search(start, end, hash)
 	fmt.Println(pass)
-	fmt.Println("Time:", time.Since(s))
 }
 
 // Utils
