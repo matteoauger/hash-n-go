@@ -53,8 +53,6 @@ func MainLoop(start string, end string, target string) string {
 	password := ""
 	tab := getCharacterRange()
 	cpt := 0
-	//TODO: voir pour le problème qu'il ne prendra jamais en compte le premier element du character range
-	//Il faut trouver une autre méthode pour construire le password
 	for cpt < int(math.Pow(float64(len(tab)), float64(size))) {
 		i := size - 1
 		password = ""
