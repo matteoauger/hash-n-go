@@ -1,4 +1,4 @@
-package main
+package worker
 
 import (
 	"crypto/md5"
@@ -30,12 +30,9 @@ func getCharacterRange() []int {
 }
 
 func getCharacterMap(tab []int) map[string]int {
-	size := len(tab)
-	cpt := 0
 	result := make(map[string]int)
-	for cpt < size {
-		result[string(tab[cpt])] = cpt
-		cpt += 1
+	for i, character := range tab {
+		result[string(character)] = i
 	}
 	return result
 }

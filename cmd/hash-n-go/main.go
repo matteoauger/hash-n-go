@@ -2,8 +2,12 @@ package main
 
 import (
 	"fmt"
+
+	"../hash-n-go-worker"
 )
 
 func main() {
-	fmt.Println("I'm the master.")
+	testStr := "aaac"
+	matched := worker.MainLoop("", "aaaaaa", worker.Md5Hash(testStr))
+	fmt.Println(matched, testStr)
 }
