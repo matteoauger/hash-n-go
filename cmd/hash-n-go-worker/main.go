@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 )
@@ -43,9 +44,14 @@ func init() {
 // Main
 
 func main() {
-	var start = "a"
-	var end = "zzzz"
-	var hash = md5Hash("zzzz")
+	var args = os.Args
+	if len(args) < 4 {
+		fmt.Println("Usage:", args[0], "<start>", "<end>", "<hash>")
+		return
+	}
+	var start = os.Args[1]
+	var end = os.Args[2]
+	var hash = /*md5Hash(*/ os.Args[3] //) // Uncomment to give a clear password as argument.
 
 	var lStart = len(start)
 	var lEnd = len(end)
