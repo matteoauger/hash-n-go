@@ -29,6 +29,33 @@ func getCharacterRange() []int {
 	return tab
 }
 
+func getCharacterMap(tab []int) map[string]int {
+	size := len(tab)
+	cpt := 0
+	result := make(map[string]int)
+	for cpt < size {
+		result[string(tab[cpt])] = cpt
+		cpt += 1
+	}
+	return result
+}
+
+func getSteps(startClock []int, endClock []int, sizeAlphabet int) int {
+	i := 0
+	baseS := 0
+	for i < len(startClock) {
+		baseS += int(math.Pow(float64(sizeAlphabet), float64(i))) + startClock[i]
+		i += 1
+	}
+	i = 0
+	baseE := 0
+	for i < len(endClock) {
+		baseE += int(math.Pow(float64(sizeAlphabet), float64(i))) + endClock[i]
+		i += 1
+	}
+	return baseE - baseS
+}
+
 func Md5Hash(text string) string {
 	hasher := md5.New()
 	hasher.Write([]byte(text))
@@ -49,12 +76,28 @@ func Match(message string, target string) bool {
 //MainLoop hdihiz
 func MainLoop(start string, end string, target string) string {
 	size := len(end)
+	startLength := len(start)
+	endLength := len(end)
 	current := make([]int, size)
+	startClock := make([]int, startLength)
+	endClock := make([]int, endLength)
 	password := ""
 	tab := getCharacterRange()
+	characterMap := getCharacterMap(tab)
+	k := 0
+	for k < startLength {
+		startClock[k] = characterMap[string(start[k])]
+		current[k] = startClock[k]
+		k += 1
+	}
+	k = 0
+	for k < endLength {
+		endClock[k] = characterMap[string(end[k])]
+		k += 1
+	}
+	steps := getSteps(startClock, endClock, len(tab))
 	cpt := 0
-	numberToTest := int(math.Pow(float64(len(tab)), float64(size)))
-	for cpt < numberToTest {
+	for cpt < steps {
 		i := size - 1
 		password = ""
 		toTake := false
