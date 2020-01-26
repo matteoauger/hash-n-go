@@ -46,8 +46,8 @@ func init() {
 func main() {
 	var args = os.Args
 	if len(args) < 4 {
-		fmt.Println("Usage:", args[0], "<start>", "<end>", "<hash>")
-		return
+		fmt.Fprintln(os.Stderr, "Usage:", args[0], "<start>", "<end>", "<hash>")
+		os.Exit(1)
 	}
 	var start = os.Args[1]
 	var end = os.Args[2]
@@ -56,8 +56,8 @@ func main() {
 	var lStart = len(start)
 	var lEnd = len(end)
 	if lStart > lEnd {
-		fmt.Printf("'%s' greater than '%s'\n", start, end)
-		return
+		fmt.Fprintf(os.Stderr, "'%s' greater than '%s'\n", start, end)
+		os.Exit(2)
 	}
 	var rStart = stringToRefs(start)
 	var rEnd = stringToRefs(end)
@@ -66,8 +66,8 @@ func main() {
 			break
 		}
 		if rStart[i] > rEnd[i] {
-			fmt.Printf("'%s' greater than '%s'\n", start, end)
-			return
+			fmt.Fprintf(os.Stderr, "'%s' greater than '%s'\n", start, end)
+			os.Exit(2)
 		}
 	}
 	var s = time.Now()
