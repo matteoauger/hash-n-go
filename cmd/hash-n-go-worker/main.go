@@ -4,130 +4,125 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
-	"math"
 	"strings"
+	"time"
 )
 
-func getCharacterRange() []int {
-	tab := []int{}
+// Constants
 
-	// numbers
+var chars []rune
+var charsLen int
+var revChars map[rune]int
+
+// Initialisation
+
+func init() {
+	// Init char. arra
+	chars = []rune{}
+	// append numbers
 	for i := 0x30; i <= 0x39; i++ {
-		tab = append(tab, i)
+		chars = append(chars, rune(i))
 	}
-
-	// uppercase characters
+	// append uppercase characters
 	for i := 0x41; i <= 0x5a; i++ {
-		tab = append(tab, i)
+		chars = append(chars, rune(i))
 	}
-
-	// lowercase characters
+	// append lowercase characters
 	for i := 0x61; i <= 0x7a; i++ {
-		tab = append(tab, i)
+		chars = append(chars, rune(i))
 	}
 
-	return tab
+	// Init reversed char. array
+	revChars = make(map[rune]int)
+	for i, r := range chars {
+		revChars[r] = i
+	}
+	charsLen = len(chars)
 }
 
-func getCharacterMap(tab []int) map[string]int {
-	size := len(tab)
-	cpt := 0
-	result := make(map[string]int)
-	for cpt < size {
-		result[string(tab[cpt])] = cpt
-		cpt += 1
+// Main
+
+func main() {
+	var start = "a"
+	var end = "zzzz"
+	var hash = md5Hash("zzzz")
+
+	var lStart = len(start)
+	var lEnd = len(end)
+	if lStart > lEnd {
+		fmt.Printf("'%s' greater than '%s'\n", start, end)
+		return
 	}
-	return result
+	var rStart = stringToRefs(start)
+	var rEnd = stringToRefs(end)
+	for i := 0; i < lStart; i++ {
+		if rStart[i] < rEnd[i] {
+			break
+		}
+		if rStart[i] > rEnd[i] {
+			fmt.Printf("'%s' greater than '%s'\n", start, end)
+			return
+		}
+	}
+	var s = time.Now()
+	var pass = search(start, end, hash)
+	fmt.Println(pass)
+	fmt.Println("Time:", time.Since(s))
 }
 
-func getSteps(startClock []int, endClock []int, sizeAlphabet int) int {
-	i := 0
-	baseS := 0
-	for i < len(startClock) {
-		baseS += int(math.Pow(float64(sizeAlphabet), float64(i))) + startClock[i]
-		i += 1
-	}
-	i = 0
-	baseE := 0
-	for i < len(endClock) {
-		baseE += int(math.Pow(float64(sizeAlphabet), float64(i))) + endClock[i]
-		i += 1
-	}
-	return baseE - baseS
-}
+// Utils
 
-func Md5Hash(text string) string {
+func md5Hash(text string) string {
 	hasher := md5.New()
 	hasher.Write([]byte(text))
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-// Match explique
-func Match(message string, target string) bool {
-	sum := Md5Hash(message)
-
-	return strings.Compare(target, sum) == 0
-}
-
-func main() {
-	fmt.Print("I'm the worker.")
-}
-
-//MainLoop hdihiz
-func MainLoop(start string, end string, target string) string {
-	size := len(end)
-	startLength := len(start)
-	endLength := len(end)
-	current := make([]int, size)
-	startClock := make([]int, startLength)
-	endClock := make([]int, endLength)
-	password := ""
-	tab := getCharacterRange()
-	characterMap := getCharacterMap(tab)
-	k := 0
-	for k < startLength {
-		startClock[k] = characterMap[string(start[k])]
-		current[k] = startClock[k]
-		k += 1
-	}
-	k = 0
-	for k < endLength {
-		endClock[k] = characterMap[string(end[k])]
-		k += 1
-	}
-	steps := getSteps(startClock, endClock, len(tab))
-	cpt := 0
-	for cpt < steps {
-		i := size - 1
-		password = ""
-		toTake := false
-		for i >= 0 {
-			if current[i] != 0 {
-				toTake = true
-			}
-			if toTake {
-				password += string(tab[current[i]])
-			}
-			i--
-		}
-		if Match(password, target) {
-			fmt.Println("found!")
+func search(start string, end string, hash string) string {
+	var current = stringToRefs(start)
+	var password = ""
+	for password != end {
+		password = string(refsToString(current))
+		if match(password, hash) {
 			return password
 		}
-		cpt += 1
-		increment(&current, size, 0, len(tab))
+		current = increment(current, 0)
 	}
 	return ""
 }
 
-// Increment the given index of the clock array.
-func increment(arr *[]int, length int, i int, limit int) {
-	if i < 0 || i >= length {
-		return
+func match(message string, target string) bool {
+	sum := md5Hash(message)
+	return strings.Compare(target, sum) == 0
+}
+
+func stringToRefs(str string) []int {
+	var refs = make([]int, len(str))
+	for i, r := range str {
+		refs[i] = revChars[r]
 	}
-	(*arr)[i]++
-	if (*arr)[i]+1 == limit+1 {
-		(*arr)[i] = 0
-		increment(arr, length, i+1, limit)
+	return refs
+}
+
+func refsToString(refs []int) []rune {
+	var runes = make([]rune, len(refs))
+	for i, ref := range refs {
+		runes[i] = chars[ref]
 	}
+	return runes
+}
+
+func increment(arr []int, i int) []int {
+	if i < 0 {
+		return arr
+	}
+	if i >= len(arr) {
+		return append(arr, 0)
+	}
+	arr[i]++
+	if arr[i] >= charsLen {
+		arr[i] = 0
+		return increment(arr, i+1)
+	}
+	return arr
 }
