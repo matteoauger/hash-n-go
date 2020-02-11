@@ -7,6 +7,13 @@ import (
 	"os/exec"
 )
 
+// TODO instructions suivantes : 
+// Args : ["hash", "websocket-URI"]
+// Récupérer n machines slaves
+// Subdiviser l'espace de recherche avec n 
+// Distribuer le travail aux workers
+// On return : envoi websocket au serveur node
+
 func main() {
 	worker := "gitlab.com/hacheurs/hash-n-go/cmd/hash-n-go-worker"
 	start := "000"
