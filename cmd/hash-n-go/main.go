@@ -1,9 +1,10 @@
 package main
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"fmt"
+    "bytes"
+    "io"
+    "os"
 	"os/exec"
 )
 
@@ -14,23 +15,62 @@ import (
 // Distribuer le travail aux workers
 // On return : envoi websocket au serveur node
 
+// 26 * 2 + 10 = 62 * 6 = 372 caractères 
+
 func main() {
-	worker := "gitlab.com/hacheurs/hash-n-go/cmd/hash-n-go-worker"
-	start := "000"
-	end := "999"
-	target := "111"
-	hash := md5Hash(target)
-	cmd := exec.Command("go", "run", worker, start, end, hash)
-	out, err := cmd.Output()
-	if err != nil {
-		fmt.Printf("Error %v\n", err)
-	} else {
-		fmt.Printf("Output: %s\n", out)
-	}
+    args := os.Args
+
+    if len(args) != 3 {
+        fmt.Printf("USAGE : %s <hash> <websocket-URI>\n", args[0])
+        os.Exit(1)
+    }
+
+    //hash         := args[1]
+    //websocketUri := args[2]
+    getNodeCount();
+
+    //fmt.Printf("%s %s", hash, websocketUri)
 }
 
-func md5Hash(text string) string {
-	hasher := md5.New()
-	hasher.Write([]byte(text))
-	return hex.EncodeToString(hasher.Sum(nil))
+func getNodeCount() {
+        //create command
+        catCmd := exec.Command("docker", "node", "ls")
+        wcCmd := exec.Command( "wc", "-l" )
+
+        //make a pipe
+        reader, writer := io.Pipe()
+        var buf bytes.Buffer
+
+        //set the output of "cat" command to pipe writer
+        catCmd.Stdout = writer
+        //set the input of the "wc" command pipe reader
+
+        wcCmd.Stdin = reader
+
+        //cache the output of "wc" to memory
+        wcCmd.Stdout = &buf
+
+        //start to execute "cat" command
+        catCmd.Start()
+
+        //start to execute "wc" command
+        wcCmd.Start()
+
+        //waiting for "cat" command complete and close the writer
+        catCmd.Wait()
+        writer.Close()
+
+        //waiting for the "wc" command complete and close the reader
+        wcCmd.Wait()
+        reader.Close()
+        //copy the buf to the standard output
+        io.Copy( os.Stdout, &buf )
+
+        fmt.Println(string(buf.Bytes()))
 }
+
+//func scaleWorkers() {
+    //var nbAvailableSlaves: int64 = 6
+    //var workAmmount : int64 = 372 / nbAvailableSlaves
+//}
+
