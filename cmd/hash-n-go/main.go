@@ -22,14 +22,29 @@ import (
 func main() {
     args := os.Args
 
-    if len(args) != 3 {
-        fmt.Printf("USAGE : %s <hash> <websocket-URI>\n", args[0])
+    if len(args) < 3 || len(args) > 4 {
+        hint := "<hash> <websocket-URI> <optionnal: worker count>"
+        fmt.Printf("USAGE : %s %s \n", args[0], hint)
         os.Exit(1)
     }
 
     //hash         := args[1]
     //websocketUri := args[2]
-    nWorkers := getNodeCount()
+
+    // getting the worker count either from args or automatic
+    var nWorkers int
+    if len(args) > 3 {
+        var err error
+        nWorkers, err = strconv.Atoi(args[3])
+
+        if err != nil {
+            fmt.Printf("arg error : Worker count should be an integer")
+            os.Exit(1)
+        }
+    } else {
+        nWorkers = getNodeCount()
+    }
+
     fmt.Println(nWorkers)
     //fmt.Printf("%s %s", hash, websocketUri)
 }
