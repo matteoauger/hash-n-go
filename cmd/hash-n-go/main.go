@@ -6,6 +6,8 @@ import (
     "io"
     "os"
 	"os/exec"
+    "strconv"
+    "strings"
 )
 
 // TODO instructions suivantes : 
@@ -27,22 +29,22 @@ func main() {
 
     //hash         := args[1]
     //websocketUri := args[2]
-    getNodeCount();
-
+    nWorkers := getNodeCount()
+    fmt.Println(nWorkers)
     //fmt.Printf("%s %s", hash, websocketUri)
 }
 
-func getNodeCount() {
+func getNodeCount() int {
         //create command
-        catCmd := exec.Command("docker", "node", "ls")
-        wcCmd := exec.Command( "wc", "-l" )
+        ncCmd := exec.Command("docker", "node", "ls")
+        wcCmd := exec.Command("wc", "-l")
 
         //make a pipe
         reader, writer := io.Pipe()
         var buf bytes.Buffer
 
-        //set the output of "cat" command to pipe writer
-        catCmd.Stdout = writer
+        //set the output of "node ls" command to pipe writer
+        ncCmd.Stdout = writer
         //set the input of the "wc" command pipe reader
 
         wcCmd.Stdin = reader
@@ -50,23 +52,29 @@ func getNodeCount() {
         //cache the output of "wc" to memory
         wcCmd.Stdout = &buf
 
-        //start to execute "cat" command
-        catCmd.Start()
+        //start to execute "node ls" command
+        ncCmd.Start()
 
         //start to execute "wc" command
         wcCmd.Start()
 
-        //waiting for "cat" command complete and close the writer
-        catCmd.Wait()
+        ncCmd.Wait()
         writer.Close()
 
-        //waiting for the "wc" command complete and close the reader
         wcCmd.Wait()
         reader.Close()
-        //copy the buf to the standard output
-        io.Copy( os.Stdout, &buf )
 
-        fmt.Println(string(buf.Bytes()))
+        strStdout := string(buf.Bytes())
+        firstLine := strings.Split(strStdout, "\n")[0]
+        res, err := strconv.Atoi(firstLine)
+
+        if err != nil {
+            panic(err)
+        }
+
+        // return number of available workers
+        // minus 1 bc ignoring header
+        return res - 1
 }
 
 //func scaleWorkers() {
