@@ -5,7 +5,8 @@ import (
 	"os"
 	"strconv"
 
-	"gitlab.com/hacheurs/hash-n-go/pkg/system/swarm"
+	"gitlab.com/hacheurs/hash-n-go/pkg/sys/swarm"
+    "gitlab.com/hacheurs/hash-n-go/pkg/scal"
 )
 
 // TODO instructions suivantes :
@@ -15,7 +16,6 @@ import (
 // Distribuer le travail aux workers
 // On return : envoi websocket au serveur node
 
-// 26 * 2 + 10 = 62 * 6 = 372 caractères
 
 func main() {
 	args := os.Args
@@ -43,11 +43,6 @@ func main() {
 		nWorkers = swarm.GetNodeCount()
 	}
 
-	fmt.Println(nWorkers)
+    scal.ScaleWorkers(nWorkers, 6)
 	//fmt.Printf("%s %s", hash, websocketUri)
 }
-
-//func scaleWorkers() {
-//var nbAvailableSlaves: int64 = 6
-//var workAmmount : int64 = 372 / nbAvailableSlaves
-//}
