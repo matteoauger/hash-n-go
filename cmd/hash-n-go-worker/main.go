@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+    "gitlab.com/hacheurs/hash-n-go/pkg/char"
 )
 
 // Constants
@@ -17,21 +19,7 @@ var revChars map[rune]int
 // Initialisation
 
 func init() {
-	// Init char. arra
-	chars = []rune{}
-	// append numbers
-	for i := 0x30; i <= 0x39; i++ {
-		chars = append(chars, rune(i))
-	}
-	// append uppercase characters
-	for i := 0x41; i <= 0x5a; i++ {
-		chars = append(chars, rune(i))
-	}
-	// append lowercase characters
-	for i := 0x61; i <= 0x7a; i++ {
-		chars = append(chars, rune(i))
-	}
-
+    chars = char.CreateAlphabet()
 	// Init reversed char. array
 	revChars = make(map[rune]int)
 	for i, r := range chars {
