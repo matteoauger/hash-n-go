@@ -1,6 +1,6 @@
 package char
 
-// TODO rune util
+// CreateAlphabet creates the alphabet for the hash source possibilities
 func CreateAlphabet() []rune {
 	// Init char. arra
 	chars := []rune{}
