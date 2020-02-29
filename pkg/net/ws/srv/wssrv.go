@@ -16,10 +16,6 @@ var upgrader = websocket.Upgrader{
 
 var connHandler ws.ConnHandler
 
-func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Home Page")
-}
-
 func wsEndpoint(w http.ResponseWriter, r *http.Request) {
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true } // allow any connection
 
