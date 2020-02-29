@@ -15,30 +15,9 @@ var upgrader = websocket.Upgrader{
 }
 
 var connHandler ws.ConnHandler
-var msgHandler ws.MsgHandler
 
 func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Home Page")
-}
-
-func reader(conn *websocket.Conn) {
-	for {
-		messageType, msg, err := conn.ReadMessage()
-
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		msgHandler(string(msg))
-
-		// echo back the message
-
-		if err := conn.WriteMessage(messageType, msg); err != nil {
-			log.Println(err)
-			return
-		}
-	}
 }
 
 func wsEndpoint(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +30,7 @@ func wsEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	connHandler(ws)
-	reader(ws)
+	//reader(ws)
 }
 
 func setupRoutes() {
@@ -59,9 +38,8 @@ func setupRoutes() {
 }
 
 // Start starts the websocket API
-func Start(addr string, connectionHandler ws.ConnHandler, messageHandler ws.MsgHandler) {
+func Start(addr string, connectionHandler ws.ConnHandler) {
 	connHandler = connectionHandler
-	msgHandler = messageHandler
 	fmt.Println("Go websockets")
 	setupRoutes()
 	log.Fatal(http.ListenAndServe(addr, nil))
