@@ -37,7 +37,7 @@ func main() {
 	// getting the worker count either from args or automatically
 	var nWorkers int
 
-	if len(args) > 3 {
+	if len(args) > 2 {
 		var err error
 		nWorkers, err = strconv.Atoi(args[2])
 
