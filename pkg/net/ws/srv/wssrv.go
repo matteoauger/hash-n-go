@@ -30,7 +30,6 @@ func wsEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	connHandler(ws)
-	//reader(ws)
 }
 
 func setupRoutes() {
