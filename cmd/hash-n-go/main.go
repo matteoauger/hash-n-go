@@ -1,12 +1,15 @@
 package main
 
 import (
-    "fmt"
-    "os"
-    "strconv"
+	"fmt"
+	"os"
+	"strconv"
 
-    "gitlab.com/hacheurs/hash-n-go/pkg/sys/swarm"
-    "gitlab.com/hacheurs/hash-n-go/pkg/scal"
+	"github.com/gorilla/websocket"
+
+	"gitlab.com/hacheurs/hash-n-go/pkg/net/ws/srv"
+	"gitlab.com/hacheurs/hash-n-go/pkg/scal"
+	"gitlab.com/hacheurs/hash-n-go/pkg/sys/swarm"
 )
 
 // TODO instructions suivantes :
@@ -16,34 +19,43 @@ import (
 // nDigits Max number of digits for the search space
 const nDigits int = 6
 
+var hash string
+var schSpace []scal.SearchSpace
+
 func main() {
-    args := os.Args
+	args := os.Args
 
-    if len(args) < 3 || len(args) > 4 {
-        hint := "<hash> <websocket-URI> <optionnal: worker count>"
-        fmt.Printf("USAGE : %s %s \n", args[0], hint)
-        os.Exit(1)
-    }
+	if len(args) < 2 || len(args) > 3 {
+		hint := "<hash> <optionnal: worker count>"
+		fmt.Printf("USAGE : %s %s \n", args[0], hint)
+		os.Exit(1)
+	}
 
-    //hash         := args[1]
-    //websocketUri := args[2]
+	hash = args[1]
 
-    // getting the worker count either from args or automatically
-    var nWorkers int
+	// getting the worker count either from args or automatically
+	var nWorkers int
 
 	if len(args) > 3 {
-        var err error
-        nWorkers, err = strconv.Atoi(args[3])
+		var err error
+		nWorkers, err = strconv.Atoi(args[2])
 
-        if err != nil {
-            fmt.Printf("arg error : Worker count should be an integer")
-            os.Exit(1)
-        }
-    } else {
-        nWorkers = swarm.GetNodeCount()
-    }
+		if err != nil {
+			fmt.Printf("arg error : Worker count should be an integer")
+			os.Exit(1)
+		}
+	} else {
+		nWorkers = swarm.GetNodeCount()
+	}
 
-    schSpace := scal.ScaleWorkers(nWorkers, nDigits)
-    fmt.Println(schSpace)
+	srv.Start("localhost:8080", connHandler, msgHandler)
+	schSpace = scal.ScaleWorkers(nWorkers, nDigits)
 }
 
+func connHandler(c *websocket.Conn) {
+	fmt.Println("Connected")
+}
+
+func msgHandler(message string) {
+	fmt.Println(message)
+}
