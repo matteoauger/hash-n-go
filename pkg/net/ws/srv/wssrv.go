@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
+	"gitlab.com/hacheurs/hash-n-go/pkg/net/ws"
 )
 
 var upgrader = websocket.Upgrader{
@@ -13,24 +14,27 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
+var connHandler ws.ConnHandler
+var msgHandler ws.MsgHandler
+
 func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Home Page")
 }
 
 func reader(conn *websocket.Conn) {
 	for {
-		messageType, p, err := conn.ReadMessage()
+		messageType, msg, err := conn.ReadMessage()
 
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		log.Println(string(p))
+		msgHandler(string(msg))
 
 		// echo back the message
 
-		if err := conn.WriteMessage(messageType, p); err != nil {
+		if err := conn.WriteMessage(messageType, msg); err != nil {
 			log.Println(err)
 			return
 		}
@@ -46,7 +50,7 @@ func wsEndpoint(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
-	log.Println("Client successfully connected...")
+	connHandler(ws)
 	reader(ws)
 }
 
@@ -54,8 +58,11 @@ func setupRoutes() {
 	http.HandleFunc("/", wsEndpoint)
 }
 
-func main() {
+// Start starts the websocket API
+func Start(addr string, connectionHandler ws.ConnHandler, messageHandler ws.MsgHandler) {
+	connHandler = connectionHandler
+	msgHandler = messageHandler
 	fmt.Println("Go websockets")
 	setupRoutes()
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(addr, nil))
 }
