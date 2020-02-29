@@ -4,10 +4,13 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
-	"os"
+	"log"
 	"strings"
 
-    "gitlab.com/hacheurs/hash-n-go/pkg/char"
+	"gitlab.com/hacheurs/hash-n-go/pkg/char"
+	"gitlab.com/hacheurs/hash-n-go/pkg/net/ws/cli"
+
+	"github.com/gorilla/websocket"
 )
 
 // Constants
@@ -19,7 +22,7 @@ var revChars map[rune]int
 // Initialisation
 
 func init() {
-    chars = char.CreateAlphabet()
+	chars = char.CreateAlphabet()
 	// Init reversed char. array
 	revChars = make(map[rune]int)
 	for i, r := range chars {
@@ -31,33 +34,35 @@ func init() {
 // Main
 
 func main() {
-	var args = os.Args
-	if len(args) < 4 {
-		fmt.Fprintln(os.Stderr, "Usage:", args[0], "<start>", "<end>", "<hash>")
-		os.Exit(1)
-	}
-	var start = os.Args[1]
-	var end = os.Args[2]
-	var hash = os.Args[3]
-	var lStart = len(start)
-	var lEnd = len(end)
-	if lStart > lEnd {
-		fmt.Fprintf(os.Stderr, "'%s' greater than '%s'\n", start, end)
-		os.Exit(2)
-	}
-	var rStart = stringToRefs(start)
-	var rEnd = stringToRefs(end)
-	for i := 0; i < lStart; i++ {
-		if rStart[i] < rEnd[i] {
-			break
-		}
-		if rStart[i] > rEnd[i] {
-			fmt.Fprintf(os.Stderr, "'%s' greater than '%s'\n", start, end)
-			os.Exit(2)
-		}
-	}
-	var pass = search(start, end, hash)
-	fmt.Println(pass)
+	// var args = os.Args
+	// if len(args) < 4 {
+	// 	fmt.Fprintln(os.Stderr, "Usage:", args[0], "<start>", "<end>", "<hash>")
+	// 	os.Exit(1)
+	// }
+	// var start = os.Args[1]
+	// var end = os.Args[2]
+	// var hash = os.Args[3]
+	// var lStart = len(start)
+	// var lEnd = len(end)
+	// if lStart > lEnd {
+	// 	fmt.Fprintf(os.Stderr, "'%s' greater than '%s'\n", start, end)
+	// 	os.Exit(2)
+	// }
+	// var rStart = stringToRefs(start)
+	// var rEnd = stringToRefs(end)
+	// for i := 0; i < lStart; i++ {
+	// 	if rStart[i] < rEnd[i] {
+	// 		break
+	// 	}
+	// 	if rStart[i] > rEnd[i] {
+	// 		fmt.Fprintf(os.Stderr, "'%s' greater than '%s'\n", start, end)
+	// 		os.Exit(2)
+	// 	}
+	// }
+	// var pass = search(start, end, hash)
+	// fmt.Println(pass)
+
+	cli.Connect("ws://localhost:8080/", connHandler)
 }
 
 // Utils
@@ -115,4 +120,17 @@ func increment(arr []int, i int) []int {
 		return increment(arr, i+1)
 	}
 	return arr
+}
+
+func connHandler(conn *websocket.Conn) {
+	conn.WriteMessage(websocket.TextMessage, []byte("Hello world"))
+	for {
+		_, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Println("read: ", err)
+			return
+		}
+
+		fmt.Println(string(message))
+	}
 }
