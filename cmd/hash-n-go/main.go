@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 
@@ -48,14 +49,28 @@ func main() {
 		nWorkers = swarm.GetNodeCount()
 	}
 
-	srv.Start("localhost:8080", connHandler, msgHandler)
+	srv.Start("localhost:8080", connHandler)
 	schSpace = scal.ScaleWorkers(nWorkers, nDigits)
 }
 
 func connHandler(c *websocket.Conn) {
 	fmt.Println("Connected")
-}
 
-func msgHandler(message string) {
-	fmt.Println(message)
+	for {
+		messageType, msg, err := c.ReadMessage()
+
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		fmt.Println(string(msg))
+
+		// echo back the message
+
+		if err := c.WriteMessage(messageType, msg); err != nil {
+			log.Println(err)
+			return
+		}
+	}
 }
