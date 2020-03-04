@@ -1,6 +1,7 @@
 package scal
 
 type SearchSpace struct {
-    begin string
-    end   string
+    Begin string
+    End   string
+    Hash string
 }

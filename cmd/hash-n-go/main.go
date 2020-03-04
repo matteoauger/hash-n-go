@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"encoding/json"
 
 	"github.com/gorilla/websocket"
 
@@ -22,6 +23,7 @@ const nDigits int = 6
 
 var hash string
 var schSpace []scal.SearchSpace
+var cpt = -1
 
 func main() {
 	args := os.Args
@@ -49,28 +51,33 @@ func main() {
 		nWorkers = swarm.GetNodeCount()
 	}
 
+	schSpace = scal.ScaleWorkers(nWorkers, nDigits, hash)
 	srv.Start("localhost:8080", connHandler)
-	schSpace = scal.ScaleWorkers(nWorkers, nDigits)
 }
 
 func connHandler(c *websocket.Conn) {
 	fmt.Println("Connected")
+	cpt+=1
 
-	for {
-		messageType, msg, err := c.ReadMessage()
-
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		fmt.Println(string(msg))
-
-		// echo back the message
-
-		if err := c.WriteMessage(messageType, msg); err != nil {
-			log.Println(err)
-			return
-		}
+	json, err := json.Marshal(schSpace[cpt])
+	if err != nil {
+		log.Println(err)
+		return
 	}
+	
+	if err := c.WriteMessage(websocket.TextMessage, []byte(json)); err != nil {
+		log.Println(err)
+		return
+	}
+	
+	// echo the password
+	
+	_, msg, err := c.ReadMessage()
+
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	fmt.Println(string(msg))
 }

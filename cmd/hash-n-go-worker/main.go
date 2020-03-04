@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"encoding/json"
 
 	"gitlab.com/hacheurs/hash-n-go/pkg/char"
 	"gitlab.com/hacheurs/hash-n-go/pkg/net/ws/cli"
+	"gitlab.com/hacheurs/hash-n-go/pkg/scal"
 
 	"github.com/gorilla/websocket"
 )
@@ -123,7 +125,6 @@ func increment(arr []int, i int) []int {
 }
 
 func connHandler(conn *websocket.Conn) {
-	conn.WriteMessage(websocket.TextMessage, []byte("Hello world"))
 	for {
 		_, message, err := conn.ReadMessage()
 		if err != nil {
@@ -131,6 +132,12 @@ func connHandler(conn *websocket.Conn) {
 			return
 		}
 
-		fmt.Println(string(message))
+		var schSpace scal.SearchSpace
+
+		json.Unmarshal(message, &schSpace)
+
+		password := search(schSpace.Begin, schSpace.End, schSpace.Hash)
+
+		conn.WriteMessage(websocket.TextMessage, []byte(password))
 	}
 }

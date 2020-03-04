@@ -8,7 +8,7 @@ import (
 
 
 // ScaleWorkers returns the scaled work for the given number of wokers & digits 
-func ScaleWorkers(nbWorkers int, nDigit int) []SearchSpace {
+func ScaleWorkers(nbWorkers int, nDigit int, hash string) []SearchSpace {
     chars  := char.CreateAlphabet()
     base   := len(chars)
     nChars := int(math.Pow(float64(base), float64(nDigit))) - 1
@@ -22,7 +22,7 @@ func ScaleWorkers(nbWorkers int, nDigit int) []SearchSpace {
         beginStr := convertBase(beginIdx, chars)
         endStr   := convertBase(endIdx,   chars)
 
-        schSpaces[i] =  SearchSpace { begin: beginStr, end: endStr }
+        schSpaces[i] =  SearchSpace { Begin: beginStr, End: endStr, Hash: hash }
     }
 
     return schSpaces
