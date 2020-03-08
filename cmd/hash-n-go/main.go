@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 
 	"github.com/gorilla/websocket"
 
@@ -22,6 +23,8 @@ const workerHash string = "workers"
 var hash string
 var schSpace []scal.SearchSpace
 var cpt = -1
+
+var mutex = &sync.Mutex{}
 
 func main() {
 	hashPtr := flag.String(flagHash, "", "MANDATORY : Hash to decrypt")
@@ -51,14 +54,20 @@ func main() {
 
 	// Scale the workload and start the websocket endpoint
 	schSpace = scal.ScaleWorkload(nWorkers, nDigits, hash)
-	srv.Start("localhost:8080", connHandler)
+	go srv.Start("localhost:8080", connHandler)
+	swarm.InitSwarm("ws://localhost:8080")
 }
 
 func connHandler(c *websocket.Conn) {
 	fmt.Println("Connected")
-	cpt++
 
-	json, err := json.Marshal(schSpace[cpt])
+	// locking the counter modification
+	mutex.Lock()
+	cpt++
+	var currentSchSpace = schSpace[cpt]
+	mutex.Unlock()
+
+	json, err := json.Marshal(currentSchSpace)
 	if err != nil {
 		log.Println(err)
 		return
@@ -77,5 +86,7 @@ func connHandler(c *websocket.Conn) {
 		return
 	}
 
-	fmt.Println(string(msg))
+	fmt.Println("FOUND : " + string(msg))
+	swarm.ClearSwarm()
+	os.Exit(0)
 }
