@@ -18,6 +18,7 @@ import (
 // nDigits Max number of digits for the search space
 const nDigits int = 6
 const flagHash string = "hash"
+const flagURI string = "uri"
 const workerHash string = "workers"
 
 var hash string
@@ -28,11 +29,13 @@ var mutex = &sync.Mutex{}
 
 func main() {
 	hashPtr := flag.String(flagHash, "", "MANDATORY : Hash to decrypt")
+	uri := flag.String(flagURI, "localhost:8080", "URI of the api")
 	nWorkersPtr := flag.Int(workerHash, 0, "Number of workers to assign")
 	flag.Parse()
 
 	hash := *hashPtr
 	nWorkers := *nWorkersPtr
+	wsURI := "ws://" + *uri
 
 	// getting the worker count either from args or automatically
 	if nWorkers <= 0 {
@@ -54,8 +57,8 @@ func main() {
 
 	// Scale the workload and start the websocket endpoint
 	schSpace = scal.ScaleWorkload(nWorkers, nDigits, hash)
-	go srv.Start("localhost:8080", connHandler)
-	swarm.InitSwarm("ws://localhost:8080")
+	go srv.Start(*uri, connHandler)
+	swarm.InitSwarm(wsURI, nWorkers)
 }
 
 func connHandler(c *websocket.Conn) {
