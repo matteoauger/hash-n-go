@@ -1,11 +1,11 @@
 package main
 
 import (
+	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"os"
-	"strconv"
-	"encoding/json"
 
 	"github.com/gorilla/websocket"
 
@@ -20,58 +20,60 @@ import (
 
 // nDigits Max number of digits for the search space
 const nDigits int = 6
+const flagHash string = "hash"
+const workerHash string = "workers"
 
 var hash string
 var schSpace []scal.SearchSpace
 var cpt = -1
 
 func main() {
-	args := os.Args
+	hashPtr := flag.String(flagHash, "", "MANDATORY : Hash to decrypt")
+	nWorkersPtr := flag.Int(workerHash, 0, "Number of workers to assign")
+	flag.Parse()
 
-	if len(args) < 2 || len(args) > 3 {
-		hint := "<hash> <optionnal: worker count>"
-		fmt.Printf("USAGE : %s %s \n", args[0], hint)
-		os.Exit(1)
-	}
-
-	hash = args[1]
+	hash := *hashPtr
+	nWorkers := *nWorkersPtr
 
 	// getting the worker count either from args or automatically
-	var nWorkers int
-
-	if len(args) > 2 {
-		var err error
-		nWorkers, err = strconv.Atoi(args[2])
-
-		if err != nil {
-			fmt.Printf("arg error : Worker count should be an integer")
-			os.Exit(1)
-		}
-	} else {
+	if nWorkers <= 0 {
 		nWorkers = swarm.GetNodeCount()
 	}
 
-	schSpace = scal.ScaleWorkers(nWorkers, nDigits, hash)
+	// Managing empty hash
+	if hash == "" {
+		fmt.Printf("Error : Missing hash\nUSAGE :\n")
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
+
+	// If at this point no workers are available, send an error and exit the program
+	if nWorkers <= 0 {
+		fmt.Println("Error : no workers available.")
+		os.Exit(1)
+	}
+
+	// Scale the workload and start the websocket endpoint
+	schSpace = scal.ScaleWorkload(nWorkers, nDigits, hash)
 	srv.Start("localhost:8080", connHandler)
 }
 
 func connHandler(c *websocket.Conn) {
 	fmt.Println("Connected")
-	cpt+=1
+	cpt++
 
 	json, err := json.Marshal(schSpace[cpt])
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	
+
 	if err := c.WriteMessage(websocket.TextMessage, []byte(json)); err != nil {
 		log.Println(err)
 		return
 	}
-	
+
 	// echo the password
-	
 	_, msg, err := c.ReadMessage()
 
 	if err != nil {
