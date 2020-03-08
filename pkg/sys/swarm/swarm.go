@@ -2,6 +2,7 @@ package swarm
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os/exec"
 	"strconv"
@@ -54,4 +55,26 @@ func GetNodeCount() int {
 	}
 
 	return res
+}
+
+// InitSwarm inits the docker swarm
+func InitSwarm(wsURI string) {
+	out, err := exec.Command("docker", "service", "create", "hash-n-go-worker", "-e WS_URI=${wsURI}").Output()
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(string(out))
+}
+
+// ClearSwarm clears the current swarm services
+func ClearSwarm() {
+	out, err := exec.Command("bash", "-c", "docker service rm $(docker service ls -q)").Output()
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(string(out))
 }
