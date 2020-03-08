@@ -14,10 +14,6 @@ import (
 	"gitlab.com/hacheurs/hash-n-go/pkg/sys/swarm"
 )
 
-// TODO instructions suivantes :
-// Distribuer le travail aux workers
-// On return : envoi websocket au serveur node
-
 // nDigits Max number of digits for the search space
 const nDigits int = 6
 const flagHash string = "hash"
