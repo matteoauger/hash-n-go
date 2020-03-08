@@ -116,11 +116,7 @@ func connHandler(conn *websocket.Conn) {
 
 		json.Unmarshal(message, &schSpace)
 
-		var password string
-
-		go func() {
-			password = search(schSpace.Begin, schSpace.End, schSpace.Hash)
-		}()
+		password := search(schSpace.Begin, schSpace.End, schSpace.Hash)
 
 		conn.WriteMessage(websocket.TextMessage, []byte(password))
 	}
