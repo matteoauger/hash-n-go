@@ -18,6 +18,13 @@ func ScaleWorkload(nbWorkers int, nDigit int, hash string) []SearchSpace {
 		// calculate the begin string and end string for the given worker
 		beginIdx := (workAmount * i) + 1 // begin index
 		endIdx := workAmount * (i + 1)   // end index
+
+		// compensating the poor precision of the integer division
+		// as we can't cut exactly the workload
+		if i == nbWorkers-1 && endIdx != nChars {
+			endIdx = nChars
+		}
+
 		beginStr := convertBase(beginIdx, chars)
 		endStr := convertBase(endIdx, chars)
 
