@@ -58,8 +58,11 @@ func GetNodeCount() int {
 }
 
 // InitSwarm inits the docker swarm
-func InitSwarm(wsURI string) {
-	out, err := exec.Command("docker", "service", "create", "hash-n-go-worker", "-e WS_URI=${wsURI}").Output()
+func InitSwarm(wsURI string, nbWorkers int) {
+	var replicaFlag = "--replicas" + string(nbWorkers)
+	var envFlag = "-e WS_URI=" + wsURI
+
+	out, err := exec.Command("docker", "service", "create", "hash-n-go-worker", replicaFlag, envFlag).Output()
 
 	if err != nil {
 		panic(err)
