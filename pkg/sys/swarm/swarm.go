@@ -49,5 +49,9 @@ func GetNodeCount() int {
 
 	// return number of available workers
 	// minus 1 bc ignoring header
-	return res - 1
+	if res > 0 {
+		res--
+	}
+
+	return res
 }
