@@ -4,10 +4,8 @@
  * Module dependencies.
  */
 const app = require('../app');
-const debug = require('debug')('hash-n-go:server');
+const debug = require('debug')('web-client:server');
 const http = require('http');
-// loading environment variables
-require('dotenv').config();
 
 /**
  * Get port from environment and store in Express.

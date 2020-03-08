@@ -1,0 +1,12 @@
+<h1>{{title}}</h1>
+<p id="hash">Ceci est un hash (ou pas)</p>
+<select name="time" id="hash-time">
+    <option selected="selected" value="{{time.selected}}">{{time.selected}}s</option>
+    {{#each time.options}}
+    <option value="{{this}}">{{this}}s</option>
+    {{/each}}
+</select>
+<p id="mdp">Wow il est fou ce mot de passe</p>
+<p id="moyenne">Moyenne: </p>
+<p id="temps_restant">Temps: </p>
+<p id="nb_slaves">Esclaves: </p>
