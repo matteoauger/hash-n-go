@@ -3,10 +3,12 @@ package main
 import (
 	"crypto/md5"
 	"encoding/hex"
-	//"fmt"
+	"fmt"
+	"os"
+
+	"encoding/json"
 	"log"
 	"strings"
-	"encoding/json"
 
 	"gitlab.com/hacheurs/hash-n-go/pkg/char"
 	"gitlab.com/hacheurs/hash-n-go/pkg/net/ws/cli"
@@ -21,6 +23,18 @@ var chars []rune
 var charsLen int
 var revChars map[rune]int
 
+// Main
+
+func main() {
+	if len(os.Args) < 2 {
+		fmt.Printf("USAGE: %s %s", os.Args[0], "<websocket URI>\n")
+		os.Exit(1)
+	}
+
+	var wsURI = os.Args[1]
+	cli.Connect(wsURI, connHandler)
+}
+
 // Initialisation
 
 func init() {
@@ -31,40 +45,6 @@ func init() {
 		revChars[r] = i
 	}
 	charsLen = len(chars)
-}
-
-// Main
-
-func main() {
-	// var args = os.Args
-	// if len(args) < 4 {
-	// 	fmt.Fprintln(os.Stderr, "Usage:", args[0], "<start>", "<end>", "<hash>")
-	// 	os.Exit(1)
-	// }
-	// var start = os.Args[1]
-	// var end = os.Args[2]
-	// var hash = os.Args[3]
-	// var lStart = len(start)
-	// var lEnd = len(end)
-	// if lStart > lEnd {
-	// 	fmt.Fprintf(os.Stderr, "'%s' greater than '%s'\n", start, end)
-	// 	os.Exit(2)
-	// }
-	// var rStart = stringToRefs(start)
-	// var rEnd = stringToRefs(end)
-	// for i := 0; i < lStart; i++ {
-	// 	if rStart[i] < rEnd[i] {
-	// 		break
-	// 	}
-	// 	if rStart[i] > rEnd[i] {
-	// 		fmt.Fprintf(os.Stderr, "'%s' greater than '%s'\n", start, end)
-	// 		os.Exit(2)
-	// 	}
-	// }
-	// var pass = search(start, end, hash)
-	// fmt.Println(pass)
-
-	cli.Connect("ws://localhost:8080/", connHandler)
 }
 
 // Utils
