@@ -54,11 +54,14 @@ func main() {
 		fmt.Println("Error : no workers available.")
 		os.Exit(1)
 	}
-
+	fmt.Println("Websocket URI : ", wsURI)
 	// Scale the workload and start the websocket endpoint
 	schSpace = scal.ScaleWorkload(nWorkers, nDigits, hash)
 	go srv.Start(*uri, connHandler)
-	swarm.InitSwarm(wsURI, nWorkers)
+	//swarm.InitSwarm(wsURI, nWorkers)
+	for {
+
+	}
 }
 
 func connHandler(c *websocket.Conn) {
@@ -90,6 +93,6 @@ func connHandler(c *websocket.Conn) {
 	}
 
 	fmt.Println("FOUND : " + string(msg))
-	swarm.ClearSwarm()
+	//swarm.ClearSwarm()
 	os.Exit(0)
 }

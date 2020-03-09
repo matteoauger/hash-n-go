@@ -35,7 +35,7 @@ func setupRoutes() {
 // Start starts the websocket API
 func Start(addr string, connectionHandler ws.ConnHandler) {
 	connHandler = connectionHandler
-	fmt.Println("Go websockets")
 	setupRoutes()
+	fmt.Println("Listening...")
 	log.Fatal(http.ListenAndServe(addr, nil))
 }
