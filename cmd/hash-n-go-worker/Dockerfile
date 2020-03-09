@@ -19,9 +19,7 @@ RUN git clone \
     https://$USERNAME:$PASSWORD@www-apps.univ-lehavre.fr/forge/hacheurs/hash-n-go \
     gitlab.com/hacheurs/hash-n-go
 
-# TODO remove both lines on merge to master
 WORKDIR $GOPATH/src/gitlab.com/hacheurs/hash-n-go
-RUN git checkout 3-docker-image-master
 
 # Install go dependencies & app
 RUN make worker
